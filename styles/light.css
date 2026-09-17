@@ -1,0 +1,1 @@
+body[data-theme=light]{--bg:#eef1f4;--surface:#fff;--surface2:#e3e8ed;--line:#cbd2da;--text:#101820;--muted:#586878;--accent:#087f7b;--hot:#c92f68}body[data-theme=light] .topbar{background:rgba(238,241,244,.92)}body[data-theme=light] .noise{opacity:.025;filter:invert(1)}
