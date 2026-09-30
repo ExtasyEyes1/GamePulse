@@ -1,6 +1,6 @@
 # GamePulse
 
-Учебный тематический дашборд на чистом JavaScript с ООП и ES6 Modules. Включает отдельный Next.js backend-прокси для Fortnite API.
+Учебный тематический дашборд на чистом JavaScript с ООП и ES6 Modules. Включает отдельный Next.js backend-прокси для The Cat API.
 
 ## Возможности
 
@@ -8,8 +8,8 @@
 - независимое состояние каждого экземпляра;
 - Steam charts по текущему онлайну;
 - игровые раздачи через GamerPower API;
-- статистика Fortnite Battle Royale через Fortnite API;
-- API-ключ Fortnite API хранится только на сервере Next.js;
+- случайный кот и данные о породе через The Cat API;
+- API-ключ The Cat API хранится только на сервере Next.js;
 - локальные виджеты задач и цитат;
 - сворачивание и полное удаление с очисткой обработчиков событий;
 - сохранение Steam account ID и задач в `localStorage`.
