@@ -1,6 +1,6 @@
 # GamePulse
 
-Учебный тематический дашборд на чистом JavaScript с ООП и ES6 Modules. Включает отдельный Next.js backend-прокси для Tracker Network API.
+Учебный тематический дашборд на чистом JavaScript с ООП и ES6 Modules. Включает отдельный Next.js backend-прокси для Fortnite API.
 
 ## Возможности
 
@@ -8,8 +8,8 @@
 - независимое состояние каждого экземпляра;
 - Steam charts по текущему онлайну;
 - игровые раздачи через GamerPower API;
-- подробная статистика VALORANT, Apex Legends, Fortnite, Overwatch 2, Rocket League, Rainbow Six Siege и Call of Duty через Tracker.gg;
-- API-ключ Tracker Network хранится только на сервере Next.js;
+- статистика Fortnite Battle Royale через Fortnite API;
+- API-ключ Fortnite API хранится только на сервере Next.js;
 - локальные виджеты задач и цитат;
 - сворачивание и полное удаление с очисткой обработчиков событий;
 - сохранение Steam account ID и задач в `localStorage`.

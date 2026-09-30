@@ -2,9 +2,9 @@ import ToDoWidget from './ToDoWidget.js';
 import QuoteWidget from './QuoteWidget.js';
 import DotaStatsWidget from './DotaStatsWidget.js';
 import DealsWidget from './DealsWidget.js';
-import TrackerWidget from './TrackerWidget.js';
+import FortniteWidget from './FortniteWidget.js';
 export default class Dashboard {
-  constructor(container) { this.container = container; this.widgets = []; this.types = { todo: ToDoWidget, quote: QuoteWidget, dota: DotaStatsWidget, deals: DealsWidget, tracker: TrackerWidget }; }
+  constructor(container) { this.container = container; this.widgets = []; this.types = { todo: ToDoWidget, quote: QuoteWidget, dota: DotaStatsWidget, deals: DealsWidget, fortnite: FortniteWidget }; }
   mount(targetId, widgetType) { const target = document.getElementById(targetId); const Widget = this.types[widgetType]; if (!target || !Widget) return; const widget = new Widget({ id: `${widgetType}-${Date.now()}` }); widget.onDestroy = id => this.removeWidget(id, false); this.widgets.push(widget); target.append(widget.render()); }
   clear() { this.widgets.slice().forEach(widget => widget.destroy()); this.widgets = []; }
   addWidget(widgetType) { const Widget = this.types[widgetType]; if (!Widget) return; const widget = new Widget({ id: `${widgetType}-${Date.now()}` }); widget.onDestroy = id => this.removeWidget(id, false); this.widgets.push(widget); this.container.append(widget.render()); this.updateCount(); }

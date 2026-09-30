@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'GamePulse API Proxy',
-  description: 'Server-side proxy for Tracker Network API',
+  description: 'Server-side proxy for Fortnite API',
 };
 
 export default function RootLayout({ children }) {
