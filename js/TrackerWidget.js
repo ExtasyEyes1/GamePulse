@@ -48,15 +48,36 @@ export default class TrackerWidget extends UIComponent {
       return;
     }
     this.showMessage('Ищу профиль и загружаю статистику...', false, true);
-    const apiOrigin = window.GAMEPULSE_API_URL || (['localhost', '127.0.0.1'].includes(location.hostname) ? 'http://localhost:3000' : location.origin);
+    const apiOrigins = window.GAMEPULSE_API_URL
+      ? [window.GAMEPULSE_API_URL]
+      : ['localhost', '127.0.0.1'].includes(location.hostname)
+        ? ['http://localhost:3000', 'http://localhost:3001']
+        : [location.origin];
     const params = new URLSearchParams({ platform: form.elements.namedItem('platform').value, name, tag });
     try {
-      const response = await fetch(`${apiOrigin}/api/tracker/${encodeURIComponent(game)}?${params}`);
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || 'Не удалось загрузить профиль.');
-      this.renderProfile(payload);
+      let lastNetworkError;
+      for (const apiOrigin of apiOrigins) {
+        try {
+          const response = await fetch(`${apiOrigin}/api/tracker/${encodeURIComponent(game)}?${params}`);
+          const payload = await response.json().catch(() => ({}));
+          const canTryNextLocalProxy = apiOrigins.length > 1 && (response.status === 404 || response.status >= 500);
+          if (!response.ok && canTryNextLocalProxy) {
+            lastNetworkError = new Error(payload.error || 'Прокси временно недоступен.');
+            continue;
+          }
+          if (!response.ok) throw new Error(payload.error || 'Не удалось загрузить профиль.');
+          this.renderProfile(payload);
+          return;
+        } catch (error) {
+          lastNetworkError = error;
+          const isNetworkError = error instanceof TypeError || /Failed to fetch|NetworkError|fetch failed/i.test(error.message);
+          if (!isNetworkError) throw error;
+        }
+      }
+      throw lastNetworkError || new Error('Не удалось подключиться к прокси.');
     } catch (error) {
-      this.showMessage(error.message === 'Failed to fetch' ? 'Не удалось подключиться к прокси. Запусти Next.js backend на порту 3000 и проверь TRN_API_KEY.' : error.message, true);
+      const isNetworkError = error instanceof TypeError || /Failed to fetch|NetworkError|fetch failed/i.test(error.message);
+      this.showMessage(isNetworkError ? 'Не удалось подключиться к прокси. Проверь Next.js backend на порту 3000 или 3001 и параметр TRN_API_KEY.' : error.message, true);
     }
   }
 
