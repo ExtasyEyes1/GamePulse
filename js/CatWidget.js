@@ -27,6 +27,9 @@ export default class CatWidget extends UIComponent {
           const payload = await response.json().catch(() => ({}));
           const canTryNextLocalProxy = apiOrigins().length > 1 && (response.status === 404 || response.status >= 500);
           if (!response.ok && canTryNextLocalProxy) { lastError = new Error(payload.error || 'Прокси временно недоступен.'); continue; }
+          if (!response.ok && location.hostname.endsWith('github.io') && response.status === 404) {
+            throw new Error('Сервер котиков ещё не подключён к опубликованной версии.');
+          }
           if (!response.ok) throw new Error(payload.error || 'Не удалось загрузить котика.');
           this.renderCat(payload.cat);
           return;
