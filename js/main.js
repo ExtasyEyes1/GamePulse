@@ -1,4 +1,3 @@
-import './config.js';
 import Dashboard from './Dashboard.js';
 
 document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="styles/soft.css"><link rel="stylesheet" href="styles/light.css"><link rel="stylesheet" href="styles/finish.css"><link rel="stylesheet" href="styles/final2.css"><link rel="stylesheet" href="styles/labels.css"><link rel="stylesheet" href="styles/tracker.css">');

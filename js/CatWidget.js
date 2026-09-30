@@ -1,17 +1,13 @@
 import UIComponent from './UIComponent.js';
 
-const apiOrigins = () => window.GAMEPULSE_API_URL
-  ? [window.GAMEPULSE_API_URL]
-  : ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? ['http://localhost:3000', 'http://localhost:3001']
-    : [location.origin];
+const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search?limit=1&has_breeds=1';
 
 export default class CatWidget extends UIComponent {
   constructor(config = {}) { super({ ...config, title: 'Cat Signal / Случайный кот', icon: '⌁' }); }
 
   render() {
     super.render();
-    this.body.innerHTML = `<div class="cat-toolbar"><div><span>LIVE FELINE STREAM</span><strong>Один запрос — один новый кот.</strong></div><button class="solid-button" type="button" data-new-cat>Новый кот <span>↗</span></button></div><div class="tracker-feedback cat-feedback" role="status" aria-live="polite"><div class="tracker-empty"><span class="tracker-mark">=^.^=</span><p>Загружаю первую запись из кошачьего эфира.</p><small>Фотография и данные приходят через защищённый сервер GamePulse.</small></div></div>`;
+    this.body.innerHTML = `<div class="cat-toolbar"><div><span>LIVE FELINE STREAM</span><strong>Один запрос — один новый кот.</strong></div><button class="solid-button" type="button" data-new-cat>Новый кот <span>↗</span></button></div><div class="tracker-feedback cat-feedback" role="status" aria-live="polite"><div class="tracker-empty"><span class="tracker-mark">=^.^=</span><p>Загружаю первую запись из кошачьего эфира.</p><small>Фотография и данные приходят из публичного The Cat API.</small></div></div>`;
     this.listen(this.body.querySelector('[data-new-cat]'), 'click', () => this.loadCat());
     this.loadCat();
     return this.element;
@@ -20,29 +16,25 @@ export default class CatWidget extends UIComponent {
   async loadCat() {
     this.showMessage('Ищу котика в эфире...', false, true);
     try {
-      let lastError;
-      for (const apiOrigin of apiOrigins()) {
-        try {
-          const response = await fetch(`${apiOrigin}/api/cats`);
-          const payload = await response.json().catch(() => ({}));
-          const canTryNextLocalProxy = apiOrigins().length > 1 && (response.status === 404 || response.status >= 500);
-          if (!response.ok && canTryNextLocalProxy) { lastError = new Error(payload.error || 'Прокси временно недоступен.'); continue; }
-          if (!response.ok && location.hostname.endsWith('github.io') && response.status === 404) {
-            throw new Error('Сервер котиков ещё не подключён к опубликованной версии.');
-          }
-          if (!response.ok) throw new Error(payload.error || 'Не удалось загрузить котика.');
-          this.renderCat(payload.cat);
-          return;
-        } catch (error) {
-          lastError = error;
-          const isNetworkError = error instanceof TypeError || /Failed to fetch|NetworkError|fetch failed/i.test(error.message);
-          if (!isNetworkError) throw error;
-        }
-      }
-      throw lastError || new Error('Не удалось подключиться к прокси.');
-    } catch (error) {
-      const isNetworkError = error instanceof TypeError || /Failed to fetch|NetworkError|fetch failed/i.test(error.message);
-      this.showMessage(isNetworkError ? 'Не удалось подключиться к прокси. Проверь Next.js backend на порту 3000 или 3001.' : error.message, true);
+      const response = await fetch(CAT_API_URL);
+      const payload = await response.json().catch(() => null);
+      const source = Array.isArray(payload) ? payload[0] : null;
+      if (!response.ok || !source?.url) throw new Error('The Cat API не вернул фотографию.');
+      const breed = source.breeds?.[0] || {};
+      this.renderCat({
+        id: source.id,
+        imageUrl: source.url,
+        breed: {
+          name: breed.name || null,
+          origin: breed.origin || null,
+          temperament: breed.temperament || null,
+          lifeSpan: breed.life_span || null,
+          weight: breed.weight?.metric || null,
+          description: breed.description || null,
+        },
+      });
+    } catch {
+      this.showMessage('Не удалось загрузить котика. Попробуй ещё раз.', true);
     }
   }
 
